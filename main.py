@@ -199,6 +199,23 @@ async def callback_inline(call,):
         except Exception as a:
             print("stop volume:", a)
 
+    elif call.data == "Help":
+        try:
+            if chat_type == 'private':
+
+                # cancel state there is any active session for user
+                iscaller = await bot.get_state(userid, chat_id)
+
+                if iscaller != None:
+                    await bot.delete_state(userid, chat_id)
+
+                await bot.send_message(chat_id, "1: add wallet key a\n2:add wallet key b\nstart volume.\n\nuse stop volume button to halt volume.")
+                
+            else:
+                pass
+        except Exception as a:
+            print("stop volume:", a)
+
 @bot.message_handler(state=MyStates.keysa)
 async def add_keya_func(message):
     """
@@ -315,7 +332,7 @@ async def getMessage(update: dict):
 @app.route("/")
 async def webhook():
     await bot.remove_webhook()
-    await bot.set_webhook(url=' https://loadbalance-b9366d37c4bd.herokuapp.com/' + BOT_TOKEN)
+    await bot.set_webhook(url='https://loadbalance-b9366d37c4bd.herokuapp.com/' + BOT_TOKEN)
     return "", 200
 
 async def main():
