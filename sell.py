@@ -6,8 +6,13 @@ from solana.transaction import Transaction
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
-from create_close_account import  fetch_pool_keys, sell_get_token_account,get_token_account, make_swap_instruction
-solana_client = Client("https://solana-mainnet.core.chainstack.com/09bd70b85bb848a5f59c0e384bdcb948")
+from create_close_account import sell_get_token_account,get_token_account, make_swap_instruction
+
+endpoint = "https://api.mainnet-beta.solana.com"
+#"https://solana-mainnet.core.chainstack.com/09bd70b85bb848a5f59c0e384bdcb948"
+url = 'https://solana-mainnet.g.alchemy.com/v2/z9C5AM0W9ltsD2HBSbmCgaByy9FSZASc'
+solana_client = Client(endpoint)
+print(solana_client.is_connected())
 
 import time, base58
 
@@ -80,6 +85,40 @@ poolkeysOrange = {'amm_id': Pubkey.from_string(
     '7CnWTUyDstVfeyWZHonGUvhGmCjhhH4iLEJSTHwV3BQv',
 )}
 
+poolkeysBoyoyo = {'amm_id': Pubkey.from_string(
+    '6woyrArPvmteXbRMrNwL1hKALZVrvhuQDzPHqmc1xY4Y',
+), 'authority': Pubkey.from_string(
+    '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+), 'base_mint': Pubkey.from_string(
+    '9V2ns9yRUtn41GmuxZHESA6qVnfwcDrroDCVy2Kpu9E5',
+), 'base_decimals': 9, 'quote_mint': Pubkey.from_string(
+    'So11111111111111111111111111111111111111112',
+), 'quote_decimals': 9, 'lp_mint': Pubkey.from_string(
+    '7xmBgrNc3YpU54arsD1oNTQV3CrrSRK2fTrgfYbK4pDv',
+), 'open_orders': Pubkey.from_string(
+    '6BRtwM4aBw2pKTpXcUc21LyvRdy7UpXKpFYccHCub4j5',
+), 'target_orders': Pubkey.from_string(
+    'DFkFv57hVdnJd9vTj7i8ZDcM4HCk2ow9UrKTgHtu3FQQ',
+), 'base_vault': Pubkey.from_string(
+    '581fpdP6ZTVA4J6VrqX2KTfDYxnffzXgxq5CXmntsXFf',
+), 'quote_vault': Pubkey.from_string(
+    '9CYYe3Km613YLz5jdoKAmhqN7bSfTKT1LKm6h1RXLsHH',
+), 'market_id': Pubkey.from_string(
+    'GVNTrsVSrtWs6ZP15XFk3F6xZjfAYCDVDp6fBPD1cvYb',
+), 'market_base_vault': Pubkey.from_string(
+    '6TQVAqC256WsrztQkd3yStnBMFaQH3CJoQUbzXD8vTma',
+), 'market_quote_vault': Pubkey.from_string(
+    'AX3wyjQxgDhsvfrLrU7xukTNDoqY314HAw92hjB9eo4J',
+), 'market_authority': Pubkey.from_string(
+    'MESVKcxoPe5TSLWCTheKJ9nQynCNrAhYeCQDkGybrLQ',
+), 'bids': Pubkey.from_string(
+    'sdoXkRBhrB2vVDaCAScridXM6q634UhSTjrJ4Qr2C6f',
+), 'asks': Pubkey.from_string(
+    '4C4BcvQeDkkurkmku2L4pvj772Hwj1QGPBLCK9PdqCgZ',
+), 'event_queue': Pubkey.from_string(
+    'AcC2PwwHcCKzX1uDjdbDKipfR19oJZgBsd1DpFwJbuep',
+)}
+
 LAMPORTS_PER_SOL = 1000000000
 
 # ctx ,     TOKEN_TO_SWAP_SELL,  keypair
@@ -91,60 +130,62 @@ def sell_token(TOKEN_TO_SWAP_SELL, amount_to_sell, seed):
         mint = Pubkey.from_string(TOKEN_TO_SWAP_SELL)
         sol = Pubkey.from_string("So11111111111111111111111111111111111111112")
         
-        print(payer.pubkey())
+        '''print(payer.pubkey())
         pool_keys = fetch_pool_keys(str(mint))
         print(pool_keys)
         
         if pool_keys == "failed":
-            return "failed"
+            return "failed"'''
         
         """Get swap token program id"""
-        # TOKEN_PROGRAM_ID = solana_client.get_account_info_json_parsed(mint).value.owner
-
-        # """Get token accounts"""
-        # #("4. Get token accounts for swap...")
-        # swap_token_account = sell_get_token_account(solana_client, payer.pubkey(), mint)
-        # WSOL_token_account, WSOL_token_account_Instructions = get_token_account(solana_client,payer.pubkey(), sol)
+        TOKEN_PROGRAM_ID = solana_client.get_account_info_json_parsed(mint).value.owner
         
-        # if swap_token_account == None:
-        #     return "failed"
+        """Get token accounts"""
+        #("4. Get token accounts for swap...")
+        swap_token_account = sell_get_token_account(solana_client, payer.pubkey(), mint)
+        WSOL_token_account, WSOL_token_account_Instructions = get_token_account(solana_client,payer.pubkey(), sol)
+        
+        if swap_token_account == None:
+            return "failed"
 
-        # else:
-        #     """Make swap instructions"""
-        #     instructions_swap = make_swap_instruction(  amount_to_sell, 
-        #                                                 swap_token_account,
-        #                                                 WSOL_token_account,
-        #                                                 poolkeysflush, 
-        #                                                 mint, 
-        #                                                 solana_client,
-        #                                                 payer
-        #                                             )
+        else:
+            """Make swap instructions"""
+            instructions_swap = make_swap_instruction(  amount_to_sell, 
+                                                        swap_token_account,
+                                                        WSOL_token_account,
+                                                        poolkeysBoyoyo, 
+                                                        mint, 
+                                                        solana_client,
+                                                        payer
+                                                    )
 
-        #     """Close wsol account"""
-        #     params = CloseAccountParams(account=WSOL_token_account, dest=payer.pubkey(), owner=payer.pubkey(), program_id=TOKEN_PROGRAM_ID)
-        #     closeAcc =(close_account(params))
+            """Close wsol account"""
+            params = CloseAccountParams(account=WSOL_token_account, dest=payer.pubkey(), owner=payer.pubkey(), program_id=TOKEN_PROGRAM_ID)
+            closeAcc =(close_account(params))
 
-        #     """Create transaction and add instructions"""
+            """Create transaction and add instructions"""
 
-        #     swap_tx = Transaction()
-        #     signers = [payer]
-        #     if WSOL_token_account_Instructions != None:
-        #         swap_tx.add(WSOL_token_account_Instructions)
-        #     swap_tx.add(instructions_swap)
-        #     swap_tx.add(closeAcc)
+            swap_tx = Transaction()
+            signers = [payer]
+            if WSOL_token_account_Instructions != None:
+                swap_tx.add(WSOL_token_account_Instructions)
+            swap_tx.add(instructions_swap)
+            swap_tx.add(closeAcc)
 
-        #     """Send transaction"""
-        #     try:
-        #         txn = solana_client.send_transaction(swap_tx, *signers)
+            """Send transaction"""
+            try:
+                txn = solana_client.send_transaction(swap_tx, *signers)
 
-        #         """Confirm it has been sent"""
-        #         txid_string_sig = txn.value
-        #         return txid_string_sig
-        #     except RPCException as e:
-        #         print(f"Error: [{e.args[0].message}]...\nRetrying...")
+                """Confirm it has been sent"""
+                txid_string_sig = txn.value
+                
+                return txid_string_sig
+            except RPCException as e:
+                print(f"Error: [{e.args[0].message}]...\nRetrying...")
+                
     except Exception as e:
         print(f"Main sell Error: {e}...")
 
-res = sell_token("Av6qVigkb7USQyPXJkUvAEm4f599WTRvd75PUWBA9eNm", 1000, 'S1gdi3B1uHUuYvV9Nb9XWgoH7Nx65ggFCmxpqYW3ehi6FbtAeUrKnfwffXN6gCmiP8EVoUkk1QcW8LwFsLktFoa')
-print(f"res: {res}")
 
+if __name__ == '__main__':
+    pass
