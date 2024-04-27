@@ -7,8 +7,16 @@ from solana.rpc.api import RPCException
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
 from solana.rpc.api import Client
-from create_close_account import get_token_account,fetch_pool_keys, get_token_account, make_swap_instruction
-solana_client = Client("https://solana-mainnet.core.chainstack.com/09bd70b85bb848a5f59c0e384bdcb948")
+from create_close_account import get_token_account, get_token_account, make_swap_instruction
+from utils import to_signature_string
+import json
+
+endpoint = "https://api.mainnet-beta.solana.com"
+#"https://solana-mainnet.core.chainstack.com/09bd70b85bb848a5f59c0e384bdcb948"
+url = 'https://solana-mainnet.g.alchemy.com/v2/z9C5AM0W9ltsD2HBSbmCgaByy9FSZASc'
+solana_client = Client(endpoint)
+
+print(solana_client.is_connected())
 
 import time, base58
 
@@ -83,11 +91,46 @@ poolkeysflush = {'amm_id': Pubkey.from_string(
     '7CnWTUyDstVfeyWZHonGUvhGmCjhhH4iLEJSTHwV3BQv',
 )}
 
+poolkeysBoyoyo = {'amm_id': Pubkey.from_string(
+    '6woyrArPvmteXbRMrNwL1hKALZVrvhuQDzPHqmc1xY4Y',
+), 'authority': Pubkey.from_string(
+    '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+), 'base_mint': Pubkey.from_string(
+    '9V2ns9yRUtn41GmuxZHESA6qVnfwcDrroDCVy2Kpu9E5',
+), 'base_decimals': 9, 'quote_mint': Pubkey.from_string(
+    'So11111111111111111111111111111111111111112',
+), 'quote_decimals': 9, 'lp_mint': Pubkey.from_string(
+    '7xmBgrNc3YpU54arsD1oNTQV3CrrSRK2fTrgfYbK4pDv',
+), 'open_orders': Pubkey.from_string(
+    '6BRtwM4aBw2pKTpXcUc21LyvRdy7UpXKpFYccHCub4j5',
+), 'target_orders': Pubkey.from_string(
+    'DFkFv57hVdnJd9vTj7i8ZDcM4HCk2ow9UrKTgHtu3FQQ',
+), 'base_vault': Pubkey.from_string(
+    '581fpdP6ZTVA4J6VrqX2KTfDYxnffzXgxq5CXmntsXFf',
+), 'quote_vault': Pubkey.from_string(
+    '9CYYe3Km613YLz5jdoKAmhqN7bSfTKT1LKm6h1RXLsHH',
+), 'market_id': Pubkey.from_string(
+    'GVNTrsVSrtWs6ZP15XFk3F6xZjfAYCDVDp6fBPD1cvYb',
+), 'market_base_vault': Pubkey.from_string(
+    '6TQVAqC256WsrztQkd3yStnBMFaQH3CJoQUbzXD8vTma',
+), 'market_quote_vault': Pubkey.from_string(
+    'AX3wyjQxgDhsvfrLrU7xukTNDoqY314HAw92hjB9eo4J',
+), 'market_authority': Pubkey.from_string(
+    'MESVKcxoPe5TSLWCTheKJ9nQynCNrAhYeCQDkGybrLQ',
+), 'bids': Pubkey.from_string(
+    'sdoXkRBhrB2vVDaCAScridXM6q634UhSTjrJ4Qr2C6f',
+), 'asks': Pubkey.from_string(
+    '4C4BcvQeDkkurkmku2L4pvj772Hwj1QGPBLCK9PdqCgZ',
+), 'event_queue': Pubkey.from_string(
+    'AcC2PwwHcCKzX1uDjdbDKipfR19oJZgBsd1DpFwJbuep',
+)}
+
 def buy_token(TOKEN_TO_SWAP_BUY, seed, amount):
     secret=base58.b58decode(seed)
     secret_key = secret[:32]
     payer = Keypair.from_seed(secret_key)
     mint = Pubkey.from_string(TOKEN_TO_SWAP_BUY)
+
     '''print(payer.pubkey())
     pool_keys = fetch_pool_keys(str(mint))
     print(pool_keys)
@@ -122,7 +165,7 @@ def buy_token(TOKEN_TO_SWAP_BUY, seed, amount):
     instructions_swap = make_swap_instruction(  amount_in, 
                                                 WSOL_token_account,
                                                 swap_associated_token_address,
-                                                poolkeysbonk,
+                                                poolkeysBoyoyo,
                                                 mint, 
                                                 solana_client,
                                                 payer
@@ -143,9 +186,21 @@ def buy_token(TOKEN_TO_SWAP_BUY, seed, amount):
     except RPCException as e:
         print(f"Error: [{e.args[0].message}]....")
 
+def decode_signature(signature):
+    try:
+        txSignature = to_signature_string(signature)
+        tx = solana_client.get_transaction(txSignature, max_supported_transaction_version=0)
+        tx = json.loads(tx.to_json())
+        outcome = tx['result']
+        if outcome == None:
+            return 0
+        else:
+            return 1
+    except Exception as x:
+        print("decode_signature:", x)
+        import traceback
+        traceback.print_exc()
+        return 0
 
-'''token = "H5UVM4S9Y5kbuVCEEyJ3NZ38CM8cxUEJrm9gNhswKSdy"          
-bonk = "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
-key = "3zGzvphFtCuYxEA7taoUx9S3d6pMqQfNy3PiKDsNNpkmWnNRVG1rTmQnXMpWp7QMwKw9qWmRp5fMDojfuUiccFMZ"   
-res = buy_token(token, key, 0.012)
-print(res)'''
+if __name__ == '__main__':
+    pass
