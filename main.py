@@ -21,9 +21,8 @@ env = Env()
 env.read_env('.env')
 from fastapi_config import app
 
-BOT_TOKEN = '7001644914:AAGbkL3ihskpl4UWNCMVvRIC7vqsu939_7Y'
+BOT_TOKEN = 'TELEGRAM BOT KEY'
 
-#'6445164250:AAEaapCLC3meKpSUxGXINQeN2rsDYMXW6xY'
 bot = AsyncTeleBot(token=BOT_TOKEN, state_storage=StateMemoryStorage())
 
 # Token to run volume on
@@ -48,9 +47,6 @@ async def start_volume_loop(chat_id):
     Run a loop for the buy and sell orders. This function creates volume
     for the token set in the env file
     """
-
-    print("chat_id:", chat_id)
-    print(type(chat_id))
 
     async with Database() as db:
         res1 = await db.get_keya(chat_id)
@@ -332,7 +328,7 @@ async def getMessage(update: dict):
 @app.route("/")
 async def webhook():
     await bot.remove_webhook()
-    await bot.set_webhook(url='https://loadbalance-b9366d37c4bd.herokuapp.com/' + BOT_TOKEN)
+    await bot.set_webhook(url='NGROK_URL-OR-SERVER-URL/' + BOT_TOKEN)
     return "", 200
 
 async def main():
@@ -342,7 +338,6 @@ async def main():
 
 async def couple():
     try:
-        print("coupling")
         await asyncio.gather(webhook(), main())
     except Exception as x:
         print("couple err:", x)
