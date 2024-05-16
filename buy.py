@@ -12,8 +12,7 @@ from utils import to_signature_string
 import json
 
 endpoint = "https://api.mainnet-beta.solana.com"
-#"https://solana-mainnet.core.chainstack.com/09bd70b85bb848a5f59c0e384bdcb948"
-url = 'https://solana-mainnet.g.alchemy.com/v2/z9C5AM0W9ltsD2HBSbmCgaByy9FSZASc'
+
 solana_client = Client(endpoint)
 
 print(solana_client.is_connected())
@@ -23,73 +22,6 @@ import time, base58
 
 LAMPORTS_PER_SOL = 1000000000
 
-poolkeysbonk = {'amm_id': Pubkey.from_string(
-    'GGj7YKTJdavHv2F7WcCic2SqEdPcZK1EWFfGDZMbDLo4',
-), 'authority': Pubkey.from_string(
-    '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
-), 'base_mint': Pubkey.from_string(
-    'So11111111111111111111111111111111111111112',
-), 'base_decimals': 9, 'quote_mint': Pubkey.from_string(
-    'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-), 'quote_decimals': 5, 'lp_mint': Pubkey.from_string(
-    'CEJvVaWazAhkcQqTS9EoUTrkBr3qHf18zhyfv72DAaRz',
-), 'open_orders': Pubkey.from_string(
-    '4mhdTamk3wCiZTmoANGvw3iZGW2Lp6jwCjK14qmDf5KC',
-), 'target_orders': Pubkey.from_string(
-    'CUfxi9Wu2M547HEGSZF7yA5vEQahu5ELwBZBrE3BbetL',
-), 'base_vault': Pubkey.from_string(
-    'B1mmGm5bveLSwYHkQXPJ7mFb5KBFNa7U9Hma3Qdw1qbd',
-), 'quote_vault': Pubkey.from_string(
-    'DbPFYPjgCFK6KLJFh55mtn5hEroYcm7Dzs2fYBW3GGy2',
-), 'market_id': Pubkey.from_string(
-    '5Bbi2ctQPRyGtMyKxeQqLihgVx8ERjedKk49W5vRnux1',
-), 'market_base_vault': Pubkey.from_string(
-    '71d4tKG12Z5b23REjgngGMFiVpa4WFfzRYEha9tL2XFo',
-), 'market_quote_vault': Pubkey.from_string(
-    'EqWGX6ajK9nsKHKXusoenxNJiuRJkSLpjCb8knzg2Abi',
-), 'market_authority': Pubkey.from_string(
-    'Fm5vw8v3my98VaAUezxY7ptkEHk9ki2onMEhaVQHMJog',
-), 'bids': Pubkey.from_string(
-    'E12pXR4HXZMwGRhudGEhWuzfuMnixezx3T3twfSwVykt',
-), 'asks': Pubkey.from_string(
-    'HfbAJpm3DBnH46jx1KwYaqFnd47dxgo5uZmnR9gyCWvW',
-), 'event_queue': Pubkey.from_string(
-    'ES5Y4HACggzRYqaWqtGD1rF2kj9BA154hDJmzwr5LUpz',
-)}
-
-poolkeysflush = {'amm_id': Pubkey.from_string(
-    'DVj1swqYnqPzPvhwcGe9JvTJ46szGEVCYhrHZ6oUjia9',
-), 'authority': Pubkey.from_string(
-    '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
-), 'base_mint': Pubkey.from_string(
-    'H5UVM4S9Y5kbuVCEEyJ3NZ38CM8cxUEJrm9gNhswKSdy',
-), 'base_decimals': 9, 'quote_mint': Pubkey.from_string(
-    'So11111111111111111111111111111111111111112',
-), 'quote_decimals': 9, 'lp_mint': Pubkey.from_string(
-    'Acvzwk3Q6cmEdnVzSfdKLa5786QC44Hmy6cZq5MEZPLc',
-), 'open_orders': Pubkey.from_string(
-    '3pncKJCXwdbd3Hs66T6r9eExiGbSa4fhPVhxzHZNwYFu',
-), 'target_orders': Pubkey.from_string(
-    'HAkvMss1C4rhH4xxZrzJGQSnvj8bNUEE2Q4TrDP6Qnf9',
-), 'base_vault': Pubkey.from_string(
-    'CQqoRGZdH57DBiTyZPjBsycY9EQHin1gHBQFpxzMH8r3',
-), 'quote_vault': Pubkey.from_string(
-    '9ReFnM5HCAr3QUw78mpEASoNZV2xp34Vw9AvCPG7Z1a5',
-), 'market_id': Pubkey.from_string(
-    'pCi9LDihfcukVajicERXEKgD68NVSKKuP1aqGDdenBT',
-), 'market_base_vault': Pubkey.from_string(
-    'A4MY7iRNj3oixzVKLLvHGJyJpHqwJJKPp1Gn5HT725oX',
-), 'market_quote_vault': Pubkey.from_string(
-    'AveWC1Z68nwR9f4fU8BWsZQRZXfNRWuDRLCuf3Acpair',
-), 'market_authority': Pubkey.from_string(
-    '4Pn58WJDp6CSnTGkXbZ4YCKQkLYYC5PTvAMg8xFWXuTK',
-), 'bids': Pubkey.from_string(
-    'BqZNSUrtfwwuzPyd4mRoLXdQCdpLohgJSZgGKdBFDWGH',
-), 'asks': Pubkey.from_string(
-    '6ersikwb7Srqq6fkbx36nmbBruPZXpBmxUYG6jBSyMdc',
-), 'event_queue': Pubkey.from_string(
-    '7CnWTUyDstVfeyWZHonGUvhGmCjhhH4iLEJSTHwV3BQv',
-)}
 
 poolkeysBoyoyo = {'amm_id': Pubkey.from_string(
     '6woyrArPvmteXbRMrNwL1hKALZVrvhuQDzPHqmc1xY4Y',
@@ -131,11 +63,6 @@ def buy_token(TOKEN_TO_SWAP_BUY, seed, amount):
     payer = Keypair.from_seed(secret_key)
     mint = Pubkey.from_string(TOKEN_TO_SWAP_BUY)
 
-    '''print(payer.pubkey())
-    pool_keys = fetch_pool_keys(str(mint))
-    print(pool_keys)
-    if pool_keys == "failed":
-        return "failed"'''
     
     """
     Calculate amount
@@ -186,6 +113,7 @@ def buy_token(TOKEN_TO_SWAP_BUY, seed, amount):
     except RPCException as e:
         print(f"Error: [{e.args[0].message}]....")
 
+# decode transaction by hash
 def decode_signature(signature):
     try:
         txSignature = to_signature_string(signature)
