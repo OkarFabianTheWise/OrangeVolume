@@ -1,5 +1,6 @@
 import requests, aiohttp, asyncio
 
+# depricated
 def fetch_pools(address):
     try:
         url = "https://api.raydium.io/v2/main/pairs"
@@ -12,6 +13,7 @@ def fetch_pools(address):
     except Exception as d:
         print("fetch_pools err:", d)
 
+# dexscreener api; get token symbol
 def getSymbol(token):
     # usdc and usdt
     exclude = ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB']
@@ -50,21 +52,26 @@ def getSymbol(token):
         elif token == 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v':
             return "USDT", "SOL"
         
-
+# get userbalance of a token
 async def get_user_balance(wallet, token_address):
+    """ ARGS:
+    wallet(str): wallet address who's balance is to be queried
+    token_address(str): self explanatory
+
+    example: balance = await get_user_balance('my_wallet', 'bonk_address')
+    """
     try:
         url = f"https://public-api.birdeye.so/v1/wallet/token_balance?wallet={wallet}&token_address={token_address}"
 
         access = {
             "x-chain": "solana",
-            "X-API-KEY": "5438498eb1e64d51a836e9458b2f442e"
+            "X-API-KEY": "birdeye api key"
         }
         
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=access) as response:
                 if response.status == 200:
                     response_object = await response.json()
-                    #print(response)
                     if not response_object['data']:
                         return 0
                     elif response_object['data']:
